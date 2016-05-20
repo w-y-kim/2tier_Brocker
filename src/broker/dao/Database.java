@@ -37,7 +37,7 @@ public class Database {
 			ResultSet rs = pstat.executeQuery();
 
 			// System.out.println(rs.next());//한번 쓸때마다 줄이 바뀌기 때문에 주의할것
-			if (rs.next()) {// TODO rs.next()를 쓰면 안됨, 어떻게하지?
+			if (rs.next()) {// TODO rs.next()를 쓰면 안됨, 어떻게하지?해결 일단 DB문제였음
 				System.out.println("레코드가 true");
 				result = true;
 			} else {
@@ -183,9 +183,9 @@ public class Database {
 		try {
 			con.setAutoCommit(false);
 
-			//외래키-참조키 관계의 테이블은 커밋 순서도 SQL에서 처럼해줘야함
-			//그것이 복잡하니까 DB생성시 외래키를 사용하는 constraint에 on delete cascade를 해줌
-			//대신 이렇게하면 int row2 = pstat2.executeUpdate();의 결과는 0이 된다.
+			// 외래키-참조키 관계의 테이블은 커밋 순서도 SQL에서 처럼해줘야함
+			// 그것이 복잡하니까 DB생성시 외래키를 사용하는 constraint에 on delete cascade를 해줌
+			// 대신 이렇게하면 int row2 = pstat2.executeUpdate();의 결과는 0이 된다.
 			PreparedStatement pstat2 = con.prepareStatement(sql2);
 			pstat2.setString(1, ssn);
 			int row2 = pstat2.executeUpdate();
@@ -197,11 +197,7 @@ public class Database {
 
 			// if(true) throw new SQLException();//확인용
 
-			
-			System.out.println(row ==1);
-			System.out.println(row2);
 			if (row == 1 && row2 == 1) {
-				System.out.println("123");
 				System.out.println("삭제완료");
 			} else
 				System.out.println("삭제안됨");
@@ -211,7 +207,6 @@ public class Database {
 			try {
 				con.rollback();
 			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		} finally {
@@ -223,35 +218,29 @@ public class Database {
 	/**
 	 * [update] 매개변수로 주어진 새로운 고객정보를 갱신한다.
 	 * 
-	 * @param c
-	 *            새로운 고객정볼르 가지고 있는 Customer 객체
-	 * @throws RecordNotFoundException
-	 *             갱신하고자 하는 고객의 ssn이 존재하지 않을 경우 발생
+	 * @param 새로운
+	 *            고객정볼르 가지고 있는 Customer 객체
+	 * @throws 갱신하고자
+	 *             하는 고객의 ssn이 존재하지 않을 경우 발생
 	 */
-	public void update(Customer c) throws RecordNotFoundException {
-
+	public void updateCustomer(Customer c) throws RecordNotFoundException {
 		if (!ssnExist(c.getSsn()))
 			throw new RecordNotFoundException();
-
 		Connection con = ConnectionManager.getConnection();
-		String sql = "UPDATE CUSTOMER set cus_name=?, address=? where ssn=?";
+		String sql = "UPDATE CUSTOMER set cust_name=?, address=? where ssn=?";
 
 		try {
 			PreparedStatement pstat = con.prepareStatement(sql);
-			pstat.setString(1, c.getSsn());
-			pstat.setString(2, c.getCust_name());
-			pstat.setString(3, c.getAddress());
-			int result = pstat.executeUpdate();
+			pstat.setString(1, c.getCust_name());
+			pstat.setString(2, c.getAddress());
+			pstat.setString(3, c.getSsn());
+			System.out.println(pstat);
+			int result = pstat.executeUpdate();// TODO 쿼리문 틀리면 여기서 멈춰있는 문제
 			if (result == 1) {
 				System.out.println("업뎃완료");
 			} else {
-				System.out.println("업뎃안됨");
+				System.out.println("업뎃안됨");// TODO 업뎃안되는걸 체크하는 방법?
 			}
-			// if (rs.next()) {
-			// String cust_name = rs.getString("cus_name");
-			// String address = rs.getString("address");
-			// cus = new Customer(ssn,cust_name,address);
-			// }
 
 		} catch (SQLException e) {
 
@@ -285,24 +274,23 @@ public class Database {
 			pstat.setString(1, ssn);
 			// pstat.setString(2, ssn);
 			ResultSet rs = pstat.executeQuery();
-
-			if (rs.next()) {
-				System.out.println("고객의 주식자료조회시작");
-
-				while (rs.next()) {
-
-					String symbol = rs.getString("symbol");
-					int quantity = rs.getInt("quantity");
-					Shares s = new Shares(ssn, symbol, quantity);
-					list.add(s);
-				}
-
-			} else {
-				System.out.println("해당 고객은 주식자료가 없음");
+			while (rs.next()) {
+				
+				String symbol = rs.getString("symbol");
+				int quantity = rs.getInt("quantity");
+				Shares s = new Shares(ssn, symbol, quantity);
+				list.add(s);
 			}
+			//TOOD 분기처리하려면 if안의 조건에 rs.next()를 쓰게되는데 그러면 또 한줄건너뜀
+//			if (result) {
+//				System.out.println("고객의 주식자료 조회시작");
+//
+//
+//			} else {
+//				System.out.println("해당 고객은 주식자료가 없음");
+//			}
 
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -310,6 +298,37 @@ public class Database {
 
 	}
 
+	
+	public ArrayList<Stock> getStock(String ssn) throws RecordNotFoundException {
+		ArrayList<Stock> list = new ArrayList<>();
+
+		if (!ssnExist(ssn)) {
+			throw new RecordNotFoundException();
+		}
+
+		Connection con = ConnectionManager.getConnection();
+		// String sql = "SELECT * FROM customer c, shares s where c.? = s.?";
+		String sql = "SELECT * FROM shares WHERE ssn =?";
+
+		try {
+			PreparedStatement pstat = con.prepareStatement(sql);
+			pstat.setString(1, ssn);
+			// pstat.setString(2, ssn);
+			ResultSet rs = pstat.executeQuery();
+			while (rs.next()) {
+				
+				String symbol = rs.getString("symbol");
+				int quantity = rs.getInt("price");
+				Stock c = new Stock(symbol, price);
+				list.add(c);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return list;
+
+	}
 	public static void main(String[] args) {
 		Database db = new Database();
 
@@ -345,7 +364,6 @@ public class Database {
 		// System.out.println(str);
 		// }
 		// } catch (RecordNotFoundException e) {
-		// // TODO Auto-generated catch block
 		// e.printStackTrace();
 		// }
 
@@ -364,22 +382,42 @@ public class Database {
 
 		// 삭제
 
-		 try {
-		 db.deleteCustomer("111-119");
-		 } catch (RecordNotFoundException e) {
-		 e.printStackTrace();
-		 }
-
-		System.out.println("=====================================");
-		//
-		// // //업데이트
-		// Customer c_update = new Customer("111-111", "김사람", "강남");
 		// try {
-		// db.update(c_update);
+		// db.deleteCustomer("111-119");
 		// } catch (RecordNotFoundException e) {
-		// // TODO Auto-generated catch block
 		// e.printStackTrace();
 		// }
 
+		System.out.println("=====================================");
+
+		// 업데이트
+
+		// Customer c_update = new Customer("111-111", "김사람", "강남");
+		// try {
+		// db.updateCustomer(c_update);
+		// } catch (RecordNotFoundException e) {
+		// e.printStackTrace();
+		// }
+
+		System.out.println("=====================================");
+		
+		//get_shares테이블 
+		
+		ArrayList<Shares> result;
+		try {
+			result = db.getPortfolio("111-111");
+			for (int i = 0; i < result.size(); i++) {
+				Shares s = result.get(i);
+				System.out.println(s);
+			}
+		} catch (RecordNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		//get_stocks주식정보 테이블
+		
+		
+		
 	}
 }

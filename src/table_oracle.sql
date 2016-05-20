@@ -48,6 +48,7 @@ insert into customer values( '111-118', 'Yufirst8', 'Seoul');
 insert into customer values( '111-119', 'Yufirst9', 'Seoul');
 
 
+UPDATE CUSTOMER set cus_name = '김사랑' where id ='111-111'
 
 commit
 
