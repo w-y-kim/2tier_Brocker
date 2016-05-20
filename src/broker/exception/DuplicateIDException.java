@@ -5,13 +5,13 @@ package broker.exception;
  * @author user
  *
  */
-public class DuplicateIDEXception extends Exception {
+public class DuplicateIDException extends Exception {
 	
-	public DuplicateIDEXception(){
+	public DuplicateIDException(){
 		super("동일한 ID의 레코드가 존재합니다.");//부모클래스의 생성자 호출 
 	}
 
-	public DuplicateIDEXception(String msg){
+	public DuplicateIDException(String msg){
 		super(msg); 
 	}
 

@@ -16,7 +16,17 @@ create table shares
 	constraint shares_symbol_fk foreign key (symbol) references stock(symbol) on delete cascade,
        quantity number not null) ;
  
- 
+drop table shares
+       
+create table shares
+       (ssn varchar(15) not null,
+	constraint shares_ssn_fk foreign key (ssn) references customer(ssn),
+       symbol varchar(8) not null,
+	constraint shares_symbol_fk foreign key (symbol) references stock(symbol),
+       quantity number not null) ;
+
+       
+       
 insert into stock ( symbol,price) values( 'SUNW', 68.75);
 insert into stock ( symbol,price) values( 'CyAs', 22.675);
 insert into stock ( symbol,price) values( 'DUKE', 6.25);
@@ -37,6 +47,25 @@ insert into customer values( '111-117', 'Yufirst7', 'Seoul');
 insert into customer values( '111-118', 'Yufirst8', 'Seoul');
 insert into customer values( '111-119', 'Yufirst9', 'Seoul');
 
+
+
 commit
 
-select * from customer
+select * from shares
+select * from Customer
+
+Select ssn from customer where ssn = '111-111'
+
+
+insert into shares values( '111-111', 'SUNW', 100);
+insert into shares values( '111-112', 'CyAs', 200);
+insert into shares values( '111-113', 'ABStk',300);
+insert into shares values( '111-114', 'BWInc',400);
+insert into shares values( '111-119', 'JDK', 500);
+
+
+commit
+
+drop table customer 
+drop table shares
+drop table stock

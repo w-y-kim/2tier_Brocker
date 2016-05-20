@@ -23,9 +23,9 @@ import java.sql.SQLException;
 public class ConnectionManager {
 
 	private static String driver = "oracle.jdbc.driver.OracleDriver";
-	private  static String url = "jdbc:oralce:thin:@localhost:1521:XE";
-	private static String user = "hr";
-	private static String password = "hr";
+	private static  String url = "jdbc:oracle:thin:@localhost:1521:XE";// DB이름이 XE인 경우
+	private static  String user = "hr";
+	private static  String password = "hr";
 	
 	
 	/**외부에서 객체  생성 막는다..
@@ -40,11 +40,13 @@ public class ConnectionManager {
 	}
 	
 	/**어디서든 객체를 가져다 쓸 수 있도록 static을 붙인다.
+	 * 혹시 객체를 가져다 쓸 일이 있을 수도 있을까봐 만들어 둔 메소드일 뿐 
 	 * @return
 	 */
 	public static ConnectionManager getInstance(){
 		return cm; 
 	}
+
 	
 	static{
 		// static 블록 : 클래스 로딩 타임 시 단 한번 생성된다 
