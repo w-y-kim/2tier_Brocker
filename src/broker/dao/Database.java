@@ -307,8 +307,8 @@ public class Database {
 		}
 
 		Connection con = ConnectionManager.getConnection();
-		// String sql = "SELECT * FROM customer c, shares s where c.? = s.?";
-		String sql = "SELECT * FROM shares WHERE ssn =?";
+		// String sql = "SELECT * FROM stock c, shares s where c.? = s.?";
+		String sql = "SELECT * FROM stock WHERE ssn =?";
 
 		try {
 			PreparedStatement pstat = con.prepareStatement(sql);
@@ -318,7 +318,7 @@ public class Database {
 			while (rs.next()) {
 				
 				String symbol = rs.getString("symbol");
-				int quantity = rs.getInt("price");
+				int price = rs.getInt("price");
 				Stock c = new Stock(symbol, price);
 				list.add(c);
 			}
@@ -405,10 +405,13 @@ public class Database {
 		
 		ArrayList<Shares> result;
 		try {
-			result = db.getPortfolio("111-111");
+			result = db.getPortfolio("111-112");
 			for (int i = 0; i < result.size(); i++) {
 				Shares s = result.get(i);
 				System.out.println(s);
+			}
+			for (Shares s : result) {
+				System.out.println(s.toString());
 			}
 		} catch (RecordNotFoundException e) {
 			// TODO Auto-generated catch block
