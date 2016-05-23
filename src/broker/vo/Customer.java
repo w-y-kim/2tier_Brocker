@@ -40,7 +40,7 @@ public class Customer implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Customer [ssn=" + ssn + ", cust_name=" + cust_name + ", address=" + address + "]";
+		return "[등록번호] " + ssn + "[고객명] " + cust_name + "[주소] " + address;
 	} 
 	
 

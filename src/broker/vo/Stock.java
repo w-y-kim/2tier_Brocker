@@ -28,7 +28,7 @@ public class Stock {
 
 	@Override
 	public String toString() {
-		return "Shares [symbol=" + symbol + ", price=" + price + "]";
+		return "[주식명] " + symbol + " [주가] " + price;
 	}
 	
 }

@@ -330,6 +330,40 @@ public class Database {
 		return list;
 
 	}
+	public ArrayList<Shares> getAllPortfolio() throws RecordNotFoundException {
+		ArrayList<Shares> list = new ArrayList<>();
+
+
+		Connection con = ConnectionManager.getConnection();
+		// String sql = "SELECT * FROM customer c, shares s where c.? = s.?";
+		String sql = "SELECT * FROM shares";
+
+		try {
+			PreparedStatement pstat = con.prepareStatement(sql);
+			ResultSet rs = pstat.executeQuery();
+			while (rs.next()) {
+				String ssn = rs.getString("ssn");
+				String symbol = rs.getString("symbol");
+				int quantity = rs.getInt("quantity");
+				Shares s = new Shares(ssn, symbol, quantity);
+				list.add(s);
+			}
+			// TOOD 분기처리하려면 if안의 조건에 rs.next()를 쓰게되는데 그러면 또 한줄건너뜀
+			// if (result) {
+			// System.out.println("고객의 주식자료 조회시작");
+			//
+			//
+			// } else {
+			// System.out.println("해당 고객은 주식자료가 없음");
+			// }
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return list;
+
+	}
 
 	public ArrayList<Stock> getStock(String ssn) throws RecordNotFoundException {
 		ArrayList<Stock> list = new ArrayList<>();
@@ -346,6 +380,32 @@ public class Database {
 			PreparedStatement pstat = con.prepareStatement(sql);
 			pstat.setString(1, ssn);
 			// pstat.setString(2, ssn);
+			ResultSet rs = pstat.executeQuery();
+			while (rs.next()) {
+
+				String symbol = rs.getString("symbol");
+				int price = rs.getInt("price");
+				Stock c = new Stock(symbol, price);
+				list.add(c);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return list;
+
+	}
+	
+	public ArrayList<Stock> getAllStock() throws RecordNotFoundException {
+		ArrayList<Stock> list = new ArrayList<>();
+
+
+		Connection con = ConnectionManager.getConnection();
+		// String sql = "SELECT * FROM stock c, shares s where c.? = s.?";
+		String sql = "SELECT * FROM stock";
+
+		try {
+			PreparedStatement pstat = con.prepareStatement(sql);
 			ResultSet rs = pstat.executeQuery();
 			while (rs.next()) {
 
