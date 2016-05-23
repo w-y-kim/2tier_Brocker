@@ -52,6 +52,39 @@ public class Database {
 		return result;
 	}
 
+	public  boolean ssnExist2(String ssn, String symbol) {
+		boolean result = false;
+
+		// Statement 방식을 쓰면 setString 못쓰고, sql도 executeQuery에 넣어줘야함
+		// String sql = "select * from Customer where ssn =" + "'" + ssn + "'";
+		// Statement stat = con.createStatement();
+		// ResultSet rs = stat.executeQuery(sql);
+
+		Connection con = ConnectionManager.getConnection();
+		String sql = "select * from Shares where ssn = ? AND symbol = ?";
+
+		try {
+			PreparedStatement pstat = con.prepareStatement(sql);
+			pstat.setString(1, ssn);
+			pstat.setString(2, symbol);
+			ResultSet rs = pstat.executeQuery();
+
+			// System.out.println(rs.next());//한번 쓸때마다 줄이 바뀌기 때문에 주의할것
+			if (rs.next()) {// TODO rs.next()를 쓰면 안됨, 어떻게하지?해결 일단 DB문제였음
+				System.out.println("레코드가 true");
+				result = true;
+			} else {
+				System.out.println("레코드 false");
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			ConnectionManager.close(con);
+		}
+		return result;
+	}
+
 	/**
 	 * [show] 매개변수로 주어진 ssn에 해당하는 고객을 조회하여 반환
 	 * 
@@ -275,20 +308,20 @@ public class Database {
 			// pstat.setString(2, ssn);
 			ResultSet rs = pstat.executeQuery();
 			while (rs.next()) {
-				
+
 				String symbol = rs.getString("symbol");
 				int quantity = rs.getInt("quantity");
 				Shares s = new Shares(ssn, symbol, quantity);
 				list.add(s);
 			}
-			//TOOD 분기처리하려면 if안의 조건에 rs.next()를 쓰게되는데 그러면 또 한줄건너뜀
-//			if (result) {
-//				System.out.println("고객의 주식자료 조회시작");
-//
-//
-//			} else {
-//				System.out.println("해당 고객은 주식자료가 없음");
-//			}
+			// TOOD 분기처리하려면 if안의 조건에 rs.next()를 쓰게되는데 그러면 또 한줄건너뜀
+			// if (result) {
+			// System.out.println("고객의 주식자료 조회시작");
+			//
+			//
+			// } else {
+			// System.out.println("해당 고객은 주식자료가 없음");
+			// }
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -298,7 +331,6 @@ public class Database {
 
 	}
 
-	
 	public ArrayList<Stock> getStock(String ssn) throws RecordNotFoundException {
 		ArrayList<Stock> list = new ArrayList<>();
 
@@ -316,7 +348,7 @@ public class Database {
 			// pstat.setString(2, ssn);
 			ResultSet rs = pstat.executeQuery();
 			while (rs.next()) {
-				
+
 				String symbol = rs.getString("symbol");
 				int price = rs.getInt("price");
 				Stock c = new Stock(symbol, price);
@@ -329,6 +361,243 @@ public class Database {
 		return list;
 
 	}
+
+	/**
+	 * 매개변수로 전달된 주식을 매입(Shares 테이블에 레코드 입력) 매입하고자 하는 주식에 대한 보유현황이 없다면 새로운 레코드를
+	 * 삽입 이미 보유하고 있다면 레코드를 업데이트
+	 * 
+	 * @param 매입하는
+	 *            주식에 대한 정보를 담은 객체, 이것을 처리하여 DB에 SQL문 형태로 저장해줌
+	 */
+	// public void buyShares(Shares s) {
+	// Connection con = ConnectionManager.getConnection();
+	// String sql1 = "INSERT INTO SHARES VALUES(?,?,?) ";
+	// String sql2 = "UPDATE SHARES SET quantity=quantity+? where ssn =? AND
+	// symbol = ? ";
+	// boolean search = ssnExist2(s.getSsn(), s.getSymbol());
+	// PreparedStatement pstat;
+	//
+	// if (!search) {// 새주식이라면 , sql1
+	//
+	// try {
+	// pstat = con.prepareStatement(sql1);
+	// pstat.setString(1, s.getSsn());
+	// pstat.setString(2, s.getSymbol());
+	// pstat.setInt(3, s.getQuantity());
+	// pstat.executeUpdate();
+	// } catch (SQLException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// } finally {
+	// ConnectionManager.close(con);
+	// }
+	//
+	// } else {// 기존 보유주식이라면 , sql2
+	//
+	// try {
+	// pstat = con.prepareStatement(sql2);
+	// pstat.setInt(1, s.getQuantity());
+	// pstat.setString(2, s.getSsn());
+	// pstat.setString(3, s.getSymbol());
+	// pstat.executeUpdate();
+	// } catch (SQLException e) {
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// } finally {
+	// ConnectionManager.close(con);
+	// }
+	//
+	// }
+	// }
+	public void buyShares(Shares s) {
+		Connection con = ConnectionManager.getConnection();
+		String sql = "SELECT quantity FROM SHARES where ssn =? AND symbol = ? ";
+
+		PreparedStatement pstat;
+		try {
+			pstat = con.prepareStatement(sql);
+			pstat.setString(1, s.getSsn());
+			pstat.setString(2, s.getSymbol());
+			ResultSet rs = pstat.executeQuery();
+
+			if (rs.next()) {// 기존 수량 존재 시
+				sql = "UPDATE SHARES SET quantitiy = quantity + ? where =? AND symbol=?";
+				pstat = con.prepareStatement(sql);
+				pstat.setInt(1, s.getQuantity());
+				pstat.setString(2, s.getSsn());
+				pstat.setString(3, s.getSymbol());
+				pstat.executeUpdate();
+			} else {
+				try {
+					sql = "INSERT INTO SHARES VALUES(?,?,?)";
+					pstat = con.prepareStatement(sql);
+					pstat.setString(1, s.getSsn());
+					pstat.setString(2, s.getSymbol());
+					pstat.setInt(3, s.getQuantity());
+					pstat.executeUpdate();
+
+				} catch (Exception e) {
+					// TODO: handle exception
+				} finally {
+					ConnectionManager.close(con);
+				}
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			ConnectionManager.close(con);
+		}
+	}
+
+	// public void buyShares(Shares s){
+	// Connection con = ConnectionManager.getConnection();
+	// String sql;
+	// if(existShares(s)){// 존재 하면
+	// sql ="UPDATE shares SET quantity = quantity + ? WHERE ssn = ? AND symbol
+	// = ?";
+	// try{
+	// PreparedStatement stmt = con.prepareStatement(sql);
+	// stmt.setString(1, s.getQuantity());
+	// stmt.setString(2, s.getSsn());
+	// stmt.setString(3, s.getSymbol());
+	//
+	// int row = stmt.executeUpdate();
+	// System.out.println(row +"개 정보 추가");
+	// }catch(SQLException e ){
+	// e.printStackTrace();
+	// }finally{
+	// ConnectionManager.close(con);
+	// }
+	// }else {//존재 하지 않으면
+	// sql = "INSERT into shares Values(?, ?, ? ) ";
+	// try{
+	// PreparedStatement stmt = con.prepareStatement(sql);
+	// stmt.setString(1, s.getSsn());
+	// stmt.setString(2, s.getSymbol());
+	// stmt.setString(3, s.getQuantity());
+	//
+	// int row = stmt.executeUpdate();
+	// System.out.println(row +"개 정보 삽입");
+	// }catch(SQLException e ){
+	// e.printStackTrace();
+	// }finally{
+	// ConnectionManager.close(con);
+	// }
+	//
+	// }
+	// }
+
+	/**
+	 * <pre>
+	 * 매개변수로 전달된 보유주식을 매도한다. 
+	 * 1- 보유하고 있는 주식보다 적은 수량을 매도하는 경우에는 보유수량을 차감 후 업데이트 
+	 * 2-보유하고 있는 주식과 같은 수량(전량)을 매도하는 경우에는 포트폴리오 삭제(Shares테이블에 해당 레코드를 삭제) 
+	 * 3- 보유하고 있는 주식보다 많은 수량을 매도하고자 하는 경우에는 예외를 발생
+	 * 4-매도하려고 하는 주식에 대한 정보를 아예 보유정보가 없는 경우도 예외발생
+	 * </pre>
+	 * 
+	 * @param s
+	 * @throws InvalidTransactionException
+	 * @throws RecordNotFoundException
+	 */
+	public void sellShares(Shares s) throws InvalidTransactionException, RecordNotFoundException {
+		if (!ssnExist2(s.getSsn(), s.getSymbol())) {// 4.정보가 없으면
+			throw new RecordNotFoundException();
+		} else {// 정보 있을 때 (매도가능/전량매도(레코드삭제)/거래불가)
+
+			Connection con = ConnectionManager.getConnection();
+			String sql = "SELECT quantity FROM SHARES where ssn =? AND symbol = ? ";
+			PreparedStatement pstat;
+
+			try {// 수량가져와서 담음
+				pstat = con.prepareStatement(sql);
+				pstat.setString(1, s.getSsn());
+				pstat.setString(2, s.getSymbol());
+				ResultSet rs = pstat.executeQuery();
+				if (rs.next()) {//rs.next()를 안쓰면 밑에서 rs.getString("")을 못쓴다 rs, stat 은 무조건 1회성이다.
+					
+				int nowQuantity = Integer.parseInt(rs.getString("quantity"));
+				if (nowQuantity > s.getQuantity()) {	
+					// 기존 수량 존재 시
+					sql = "UPDATE SHARES SET quantitiy = quantity - ? where =? AND symbol = ?";
+					pstat = con.prepareStatement(sql);
+					pstat.setInt(1, s.getQuantity());
+					pstat.setString(2, s.getSsn());
+					pstat.setString(3, s.getSymbol());
+					pstat.executeUpdate();
+				} else if (nowQuantity == s.getQuantity()) {
+					// 레코드 삭제
+
+					try {
+						sql = "DELETE FROM SHARES where quantity = ? AND symbol =? ";
+						pstat = con.prepareStatement(sql);
+						pstat.setInt(1, s.getQuantity());
+						pstat.setString(2, s.getSymbol());
+						pstat.executeUpdate();
+
+					} catch (Exception e) {
+						// TODO: handle exception
+					} finally {
+						ConnectionManager.close(con);
+					}
+
+					}
+				} else {
+					// 적으면 에러발생
+					throw new InvalidTransactionException();
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				ConnectionManager.close(con);
+			}
+		}
+
+	}
+
+	
+//	   public void sellShares(Shares s)throws InvalidTransactionException{
+//		      Connection con = ConnectionManager.getConnection();
+//		      String sql ="SELECT quantity FROM shares WHERE ssn = ? AND symbol = ? ";
+//		      try{
+//		      PreparedStatement stmt = con.prepareStatement(sql);
+//		      stmt.setString(1, s.getSsn());
+//		      stmt.setString(2, s.getSymbol());
+//		      ResultSet rs = stmt.executeQuery();
+//		      if(rs.next()){
+//		      String quan =   rs.getString("quantity");
+//		      int ownQuan = Integer.parseInt(quan);
+//		      int getQuan = Integer.parseInt(s.getQuantity());
+//		      if(ownQuan > getQuan){
+//		      sql = "UPDATE shares SET quantity = quantity - ? WHERE ssn = ? AND symbol = ?";
+//		      stmt = con.prepareStatement(sql);
+//		      stmt.setString(1, s.getQuantity());
+//		      stmt.setString(2, s.getSsn());
+//		      stmt.setString(3, s.getSymbol());
+//		      int row = stmt.executeUpdate();
+//		      System.out.println(row + "개 정보가 update 되었습니다.");
+//		      }else if(ownQuan == getQuan){
+//		      sql = "DELETE FROM SHARES WHERE ssn = ? AND symbol = ?";   
+//		      stmt = con.prepareStatement(sql);
+//		      stmt.setString(1, s.getSsn());
+//		      stmt.setString(2, s.getSymbol());
+//		      int row  = stmt.executeUpdate();
+//		      System.out.println(row + "개 정보를 shares 테이블에서 삭제");
+//		      }else if(ownQuan < getQuan){
+//		         throw new InvalidTransactionException();
+//		      }
+//		      }else{
+//		         throw new InvalidTransactionException();
+//		      }
+//		      }catch(SQLException e){
+//		         e.printStackTrace();
+//		      }finally{
+//		         ConnectionManager.close(con);
+//		      }
+//		   } 
+	
 	public static void main(String[] args) {
 		Database db = new Database();
 
@@ -400,27 +669,36 @@ public class Database {
 		// }
 
 		System.out.println("=====================================");
-		
-		//get_shares테이블 
-		
-		ArrayList<Shares> result;
-		try {
-			result = db.getPortfolio("111-112");
-			for (int i = 0; i < result.size(); i++) {
-				Shares s = result.get(i);
-				System.out.println(s);
-			}
-			for (Shares s : result) {
-				System.out.println(s.toString());
-			}
-		} catch (RecordNotFoundException e) {
+
+		// get_shares테이블
+
+		// ArrayList<Shares> result;
+		// try {
+		// result = db.getPortfolio("111-112");
+		// for (int i = 0; i < result.size(); i++) {
+		// Shares s = result.get(i);
+		// System.out.println(s);
+		// }
+		// for (Shares s : result) {
+		// System.out.println(s.toString());
+		// }
+		// } catch (RecordNotFoundException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+
+		// get_stocks주식정보 테이블
+		Shares s1 = new Shares("111-111", "SUNW", 3000);// 기존주식
+		Shares s2 = new Shares("111-111", "JDK", 1000);// 신규주식
+
+		// db.buyShares(s1); //추가매입
+		// db.buyShares(s2); //신규매입
+
+		 try {
+			db.sellShares(s1);
+		} catch (InvalidTransactionException | RecordNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		
-		//get_stocks주식정보 테이블
-		
-		
-		
+		}//
 	}
 }
