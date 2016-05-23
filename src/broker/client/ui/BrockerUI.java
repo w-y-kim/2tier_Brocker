@@ -597,9 +597,11 @@ public class BrockerUI implements ActionListener {
 
 			// TODO 갱신필요
 			// initialize();
-			initCustomerButton(true);
-			this.refreshCustomer();
+			initCustomerButton(true);//TODO 꼭 2번 해줘야하나? 
+			this.refreshCustomer();//TODO 갱신잘안됨
 
+			clearAll();//TODO 이걸 합칠 순 없을까?
+			
 		} else if (e.getSource() == 취소) {
 			clearAll();
 			initCustomerButton(true);
