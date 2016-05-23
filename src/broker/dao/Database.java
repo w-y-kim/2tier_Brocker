@@ -658,107 +658,107 @@ public class Database {
 //		      }
 //		   } 
 	
-	public static void main(String[] args) {
-		Database db = new Database();
-
-		// 찾기(중복검사)
-
-		// boolean result = db.ssnExist("111-112");
-		// System.out.println(result);
-
-		System.out.println("=====================================");
-
-		// 컬럼하나출력
-
-		// try {
-		// Customer c = db.getCustomer("111-112");
-		// String str = c.toString();
-		// System.out.println(str);
-		// // System.out.println(c);//toString생략
-		// } catch (RecordNotFoundException e) {
-		// e.printStackTrace();
-		// }
-
-		System.out.println("=====================================");
-
-		// 전체출력
-
-		// try {
-		// ArrayList<Customer> result = db.getAllCustomer();
-		//
-		// for (int i = 0; i < result.size(); i++) {
-		// Customer c = result.get(i);
-		// System.out.println(c);
-		// String str = c.toString();
-		// System.out.println(str);
-		// }
-		// } catch (RecordNotFoundException e) {
-		// e.printStackTrace();
-		// }
-
-		System.out.println("=====================================");
-
-		// 추가
-
-		// Customer c_insert = new Customer("111-111", "김사람", "강남");
-		// try {
-		// db.addCustomer(c_insert);
-		// } catch (DuplicateIDException e) {
-		// e.printStackTrace();
-		// }
-
-		System.out.println("=====================================");
-
-		// 삭제
-
-		// try {
-		// db.deleteCustomer("111-119");
-		// } catch (RecordNotFoundException e) {
-		// e.printStackTrace();
-		// }
-
-		System.out.println("=====================================");
-
-		// 업데이트
-
-		// Customer c_update = new Customer("111-111", "김사람", "강남");
-		// try {
-		// db.updateCustomer(c_update);
-		// } catch (RecordNotFoundException e) {
-		// e.printStackTrace();
-		// }
-
-		System.out.println("=====================================");
-
-		// get_shares테이블
-
-		// ArrayList<Shares> result;
-		// try {
-		// result = db.getPortfolio("111-112");
-		// for (int i = 0; i < result.size(); i++) {
-		// Shares s = result.get(i);
-		// System.out.println(s);
-		// }
-		// for (Shares s : result) {
-		// System.out.println(s.toString());
-		// }
-		// } catch (RecordNotFoundException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-
-		// get_stocks주식정보 테이블
-		Shares s1 = new Shares("111-111", "SUNW", 3000);// 기존주식
-		Shares s2 = new Shares("111-111", "JDK", 1000);// 신규주식
-
-		// db.buyShares(s1); //추가매입
-		// db.buyShares(s2); //신규매입
-
-		 try {
-			db.sellShares(s1);
-		} catch (InvalidTransactionException | RecordNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}//
-	}
+//	public static void main(String[] args) {
+//		Database db = new Database();
+//
+//		// 찾기(중복검사)
+//
+//		// boolean result = db.ssnExist("111-112");
+//		// System.out.println(result);
+//
+//		System.out.println("=====================================");
+//
+//		// 컬럼하나출력
+//
+//		// try {
+//		// Customer c = db.getCustomer("111-112");
+//		// String str = c.toString();
+//		// System.out.println(str);
+//		// // System.out.println(c);//toString생략
+//		// } catch (RecordNotFoundException e) {
+//		// e.printStackTrace();
+//		// }
+//
+//		System.out.println("=====================================");
+//
+//		// 전체출력
+//
+//		// try {
+//		// ArrayList<Customer> result = db.getAllCustomer();
+//		//
+//		// for (int i = 0; i < result.size(); i++) {
+//		// Customer c = result.get(i);
+//		// System.out.println(c);
+//		// String str = c.toString();
+//		// System.out.println(str);
+//		// }
+//		// } catch (RecordNotFoundException e) {
+//		// e.printStackTrace();
+//		// }
+//
+//		System.out.println("=====================================");
+//
+//		// 추가
+//
+//		// Customer c_insert = new Customer("111-111", "김사람", "강남");
+//		// try {
+//		// db.addCustomer(c_insert);
+//		// } catch (DuplicateIDException e) {
+//		// e.printStackTrace();
+//		// }
+//
+//		System.out.println("=====================================");
+//
+//		// 삭제
+//
+//		// try {
+//		// db.deleteCustomer("111-119");
+//		// } catch (RecordNotFoundException e) {
+//		// e.printStackTrace();
+//		// }
+//
+//		System.out.println("=====================================");
+//
+//		// 업데이트
+//
+//		// Customer c_update = new Customer("111-111", "김사람", "강남");
+//		// try {
+//		// db.updateCustomer(c_update);
+//		// } catch (RecordNotFoundException e) {
+//		// e.printStackTrace();
+//		// }
+//
+//		System.out.println("=====================================");
+//
+//		// get_shares테이블
+//
+//		// ArrayList<Shares> result;
+//		// try {
+//		// result = db.getPortfolio("111-112");
+//		// for (int i = 0; i < result.size(); i++) {
+//		// Shares s = result.get(i);
+//		// System.out.println(s);
+//		// }
+//		// for (Shares s : result) {
+//		// System.out.println(s.toString());
+//		// }
+//		// } catch (RecordNotFoundException e) {
+//		// // TODO Auto-generated catch block
+//		// e.printStackTrace();
+//		// }
+//
+//		// get_stocks주식정보 테이블
+//		Shares s1 = new Shares("111-111", "SUNW", 3000);// 기존주식
+//		Shares s2 = new Shares("111-111", "JDK", 1000);// 신규주식
+//
+//		// db.buyShares(s1); //추가매입
+//		// db.buyShares(s2); //신규매입
+//
+//		 try {
+//			db.sellShares(s1);
+//		} catch (InvalidTransactionException | RecordNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}//
+//	}
 }
