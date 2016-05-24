@@ -138,15 +138,16 @@ public class Database {
 		try {
 			PreparedStatement pstat = con.prepareStatement(sql);
 			ResultSet rs = pstat.executeQuery();
+			int i=1;
 			while (rs.next()) {
-				System.out.println("여기까지실행");
 				String ssn = rs.getString("ssn");
 				String cust_name = rs.getString("cust_name");
 				String address = rs.getString("address");
 				Customer cus = new Customer(ssn, cust_name, address);
 				list.add(cus);
-
+				i++; 
 			}
+			System.out.println(i+"명의 고객 정보가져옴");
 
 		} catch (SQLException e) {
 

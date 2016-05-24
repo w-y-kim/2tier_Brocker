@@ -159,7 +159,7 @@ public class BrockerUI implements ActionListener {
 		stockJList.setFont(new Font("나눔바른고딕", Font.PLAIN, 11));
 		scrollPane.setViewportView(stockJList);
 
-		JLabel label = new JLabel("수정 가능 주식목록");
+		JLabel label = new JLabel("거래가능 주식목록");
 		label.setFont(new Font("나눔고딕 ExtraBold", Font.BOLD, 12));
 		label.setBounds(41, 6, 118, 15);
 		stock_area.add(label);
@@ -218,15 +218,15 @@ public class BrockerUI implements ActionListener {
 
 		// 포트폴리오리스트
 		dlm3 = new DefaultListModel<Shares>();
-		try {
-			ArrayList<Shares> portList;
-			portList = db.getAllPortfolio();
-			for (Shares e : portList) {
-				dlm3.addElement(e);
-			}
-		} catch (RecordNotFoundException e1) {
-			e1.printStackTrace();
-		}
+//		try {
+//			ArrayList<Shares> portList;
+//			portList = db.getAllPortfolio();
+//			for (Shares e : portList) {
+//				dlm3.addElement(e);
+//			}
+//		} catch (RecordNotFoundException e1) {
+//			e1.printStackTrace();
+//		}
 		portJList = new JList(dlm3);
 		portJList.setFont(new Font("나눔바른고딕", Font.PLAIN, 11));
 		scrollPane_2.setViewportView(portJList);
@@ -578,11 +578,11 @@ public class BrockerUI implements ActionListener {
 			if (menu == "신규메뉴") {
 				try {
 					db.addCustomer(cus);
+					JOptionPane.showMessageDialog(null, "신규등록완료");
 				} catch (DuplicateIDException e1) {
 					e1.printStackTrace();
 
 				}
-				JOptionPane.showMessageDialog(null, "신규등록완료");
 			} else if (menu == "수정메뉴") {
 				try {
 					db.updateCustomer(cus);
