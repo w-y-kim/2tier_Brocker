@@ -44,13 +44,13 @@ public class BrockerUI implements ActionListener {
 	private JPanel stock_area;
 	private JButton 거래주;
 	private JScrollPane scrollPane;
-	private JList list;
+	private JList stockJList;
 
 	// 전체고객명단, 포트폴리오
 	private JPanel body_panel;
 	private JScrollPane scrollPane_1;
 	private JScrollPane scrollPane_2;
-	private JList list_1;
+	private JList customerJList;
 
 	private JTextField 등록번호필드;
 	private JTextField 성명필드;
@@ -73,9 +73,8 @@ public class BrockerUI implements ActionListener {
 	private DefaultListModel<Stock> dlm;// 주식리스트담는GUI객체
 	private DefaultListModel<Customer> dlm2;
 	private DefaultListModel<Shares> dlm3;
-	private JList list_2;
+	private JList portJList;
 
-	private ArrayList<Customer> cusList;
 
 	private JTextArea 주소명필드;
 
@@ -88,6 +87,8 @@ public class BrockerUI implements ActionListener {
 	private Customer cus;
 
 	private Shares shares;
+
+	private JPanel customer_area;
 
 	/**
 	 * Launch the application.
@@ -154,9 +155,9 @@ public class BrockerUI implements ActionListener {
 		} catch (RecordNotFoundException e1) {
 			e1.printStackTrace();
 		}
-		list = new JList(dlm);
-		list.setFont(new Font("나눔바른고딕", Font.PLAIN, 11));
-		scrollPane.setViewportView(list);
+		stockJList = new JList(dlm);
+		stockJList.setFont(new Font("나눔바른고딕", Font.PLAIN, 11));
+		scrollPane.setViewportView(stockJList);
 
 		JLabel label = new JLabel("수정 가능 주식목록");
 		label.setFont(new Font("나눔고딕 ExtraBold", Font.BOLD, 12));
@@ -188,7 +189,7 @@ public class BrockerUI implements ActionListener {
 		거래가.setBounds(12, 254, 36, 21);
 		stock_area.add(거래가);
 
-		JPanel customer_area = new JPanel();
+		customer_area = new JPanel();
 		customer_area.setBounds(212, 10, 426, 283);
 		body_panel.add(customer_area);
 		customer_area.setLayout(null);
@@ -199,17 +200,17 @@ public class BrockerUI implements ActionListener {
 
 		// 고객리스트
 		dlm2 = new DefaultListModel<Customer>();
-		try {
-			cusList = db.getAllCustomer();
+		try {//TODO 멤버변수였던걸 로컬로 바꾸니까 갑자기 dlm2가 갱신 잘됨 뭐지 ?? 
+			ArrayList<Customer> cusList = db.getAllCustomer();
 			for (Customer e : cusList) {
 				dlm2.addElement(e);
 			}
 		} catch (RecordNotFoundException e1) {
 			e1.printStackTrace();
 		}
-		list_1 = new JList(dlm2);
-		list_1.setFont(new Font("나눔바른고딕", Font.PLAIN, 11));
-		scrollPane_1.setViewportView(list_1);
+		customerJList = new JList(dlm2);
+		customerJList.setFont(new Font("나눔바른고딕", Font.PLAIN, 11));
+		scrollPane_1.setViewportView(customerJList);
 
 		scrollPane_2 = new JScrollPane();
 		scrollPane_2.setBounds(276, 26, 138, 153);
@@ -217,8 +218,8 @@ public class BrockerUI implements ActionListener {
 
 		// 포트폴리오리스트
 		dlm3 = new DefaultListModel<Shares>();
-		ArrayList<Shares> portList;
 		try {
+			ArrayList<Shares> portList;
 			portList = db.getAllPortfolio();
 			for (Shares e : portList) {
 				dlm3.addElement(e);
@@ -226,9 +227,9 @@ public class BrockerUI implements ActionListener {
 		} catch (RecordNotFoundException e1) {
 			e1.printStackTrace();
 		}
-		list_2 = new JList(dlm3);
-		list_2.setFont(new Font("나눔바른고딕", Font.PLAIN, 11));
-		scrollPane_2.setViewportView(list_2);
+		portJList = new JList(dlm3);
+		portJList.setFont(new Font("나눔바른고딕", Font.PLAIN, 11));
+		scrollPane_2.setViewportView(portJList);
 
 		JLabel 등록번호 = new JLabel("등록번호");
 		등록번호.setFont(new Font("나눔고딕", Font.PLAIN, 11));
@@ -357,28 +358,36 @@ public class BrockerUI implements ActionListener {
 				allBtn[i].addActionListener(this);
 			}
 
-			list.addMouseListener(new MouseHandler());
-			list_1.addMouseListener(new MouseHandler());
-			list_2.addMouseListener(new MouseHandler());
+			stockJList.addMouseListener(new MouseHandler());
+			customerJList.addMouseListener(new MouseHandler());
+			portJList.addMouseListener(new MouseHandler());
 		}
 
 	}
 
-	public void clearAll(JList li) {
-		if (li.equals(list)) {
-			주식명필드.setText("");
-			거래가필드.setText("");
-		} else if (li.equals(list_1)) {
-			등록번호필드.setText("");
-			성명필드.setText("");
-			주소명필드.setText("");
-		} else if (li.equals(list_2)) {
-			거래주필드.setText("");
-			거래수량필드.setText("");
-		}
+	/**
+	 * 액션 이벤트에서 각 분기점 전후로 초기화 할 필요 시 사용
+	 * 
+	 * @param li
+	 */
+	// public void clearAll(JList li) {
+	// if (li.equals(stockJList)) {
+	// 주식명필드.setText("");
+	// 거래가필드.setText("");
+	// } else if (li.equals(customerJList)) {
+	// 등록번호필드.setText("");
+	// 성명필드.setText("");
+	// 주소명필드.setText("");
+	// } else if (li.equals(portJList)) {
+	// 거래주필드.setText("");
+	// 거래수량필드.setText("");
+	// }
+	//
+	// }
 
-	}
-
+	/**
+	 * 액션 이벤트에서 각 분기점 전후로 초기화 할 필요 시 사용
+	 */
 	public void clearAll() {
 		등록번호필드.setEditable(true);
 		주식명필드.setText("");
@@ -396,6 +405,11 @@ public class BrockerUI implements ActionListener {
 		}
 	}
 
+	/**
+	 * 버튼 토글 메소드
+	 * 
+	 * @param status
+	 */
 	public void initCustomerButton(boolean status) {
 		신규.setEnabled(status);
 		삭제.setEnabled(status);
@@ -407,25 +421,23 @@ public class BrockerUI implements ActionListener {
 		취소.setEnabled(!status);
 	}
 
-	public void initShareButton(boolean status) {
-		매수.setEnabled(status);
-		매도.setEnabled(status);
-		// 주식명필드.is
-		거래수량필드.setEditable(status);
-	}
-
-	private void setTextFieldValue(Object list) {
-		if (list instanceof Customer) {
-			Customer customer = (Customer) list;
+	/**
+	 * 리스트에서 클릭 시 텍스트 필드로 들어가는 메소드
+	 * 
+	 * @param stockJList
+	 */
+	private void setTextFieldValue(Object stockJList) {
+		if (stockJList instanceof Customer) {
+			Customer customer = (Customer) stockJList;
 			등록번호필드.setText(customer.getSsn());
 			성명필드.setText(customer.getCust_name());
 			주소명필드.setText(customer.getAddress());
-		} else if (list instanceof Stock) {
-			Stock stock = (Stock) list;
+		} else if (stockJList instanceof Stock) {
+			Stock stock = (Stock) stockJList;
 			주식명필드.setText(stock.getSymbol());
 			거래가필드.setText(Integer.toString(stock.getPrice()));
 		} else {
-			Shares shares = (Shares) list;
+			Shares shares = (Shares) stockJList;
 			거래주필드.setText(shares.getSymbol());
 			거래수량필드.setText(Integer.toString(shares.getQuantity()));
 		}
@@ -440,61 +452,65 @@ public class BrockerUI implements ActionListener {
 	 */
 	private class MouseHandler extends MouseAdapter {
 		public void mouseClicked(MouseEvent me) {
-			if (me.getSource() == list_1) {
+			if (me.getSource() == customerJList) {
 				Object selectedValue = null;
-				selectedValue = (Customer) list_1.getSelectedValue();
-				clearAll(list_1);
-				setTextFieldValue((Customer) selectedValue);
-				// shares창에 해당 객체의 ssn과 일치하는 shares의 정보 가져와 붙임
-				// Object portfolio = (Shares) list_2.getSelectedValue();
-				// clearAll(list_2);
-				// setTextFieldValue((Shares) portfolio);
-				Customer cus = (Customer) selectedValue;
+				selectedValue = (Customer) customerJList.getSelectedValue();
+				// clearAll(customerJList);//필요없는거 같음
+				setTextFieldValue((Customer) selectedValue);// 선택된 객체를 필드에 넣음
+
+				Customer cus = (Customer) selectedValue;// 선택한 객체의 주민번호 사용하려고
+
 				try {
-					dlm3.removeAllElements();
-					ArrayList<Shares> portlist = db.getPortfolio(cus.getSsn());
-					for (Shares e : portlist) {
+					dlm3.removeAllElements();// 초기화하는 것은 고객별 포트폴리오
+					ArrayList<Shares> portList = db.getPortfolio(cus.getSsn());
+					for (Shares e : portList) {
 						dlm3.addElement(e);
 					}
 
+					//TODO 실행은 되는데 빠진게 반영이 안됨,dlm3는 반영되는데 
+					dlm2.removeAllElements();
+					ArrayList<Customer> cusList;
+					cusList = db.getAllCustomer();
+					for (Customer e : cusList) {
+						dlm2.addElement(e);
+					}
 				} catch (RecordNotFoundException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
+
 				}
 
-			} else if (me.getSource() == list) {
+			} else if (me.getSource() == stockJList) {
 				Object selectedValue = null;
-				selectedValue = (Stock) list.getSelectedValue();
-				clearAll(list);
+				selectedValue = (Stock) stockJList.getSelectedValue();
+				// clearAll(stockJList);//필요없는거 같음
 				setTextFieldValue((Stock) selectedValue);
-			} else if (me.getSource() == list_2) {
+			} else if (me.getSource() == portJList) {
 				Object selectedValue = null;
-				selectedValue = (Shares) list_2.getSelectedValue();
-				clearAll(list_2);
+				selectedValue = (Shares) portJList.getSelectedValue();
+				// clearAll(portJList);//필요없는거 같음
 				setTextFieldValue((Shares) selectedValue);
 			}
 
 		}
 	}
 
-	public void refreshCustomer() {
-		try {
-			cusList = db.getAllCustomer();
-		} catch (RecordNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		dlm2 = new DefaultListModel<Customer>();
-		try {
-			cusList = db.getAllCustomer();
-			for (Customer e : cusList) {
-				dlm2.addElement(e);
-			}
-		} catch (RecordNotFoundException e1) {
-			e1.printStackTrace();
-		}
-	
-	}
+//	public void refreshCustomer() {
+//		try {
+//			cusList = db.getAllCustomer();
+//		} catch (RecordNotFoundException e1) {
+//			e1.printStackTrace();
+//		}
+//		dlm2 = new DefaultListModel<Customer>();
+//		try {
+//			cusList = db.getAllCustomer();
+//			for (Customer e : cusList) {
+//				dlm2.addElement(e);
+//			}
+//		} catch (RecordNotFoundException e1) {
+//			e1.printStackTrace();
+//		}
+//
+//	}
 
 	public void buttonColorChange(JButton btn) {
 		btn.setBackground(Color.GRAY);
@@ -506,28 +522,28 @@ public class BrockerUI implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// clearAll();
-		this.refreshCustomer();
+//		this.refreshCustomer();
 		if (e.getSource() == 거래주) {// 확인>거래주명넘어감>매입열림
 
 			// 주식명필드.setText(t);
 			매수.setEnabled(true);
 			거래주필드.setText(주식명필드.getText());
 			거래수량필드.setEditable(true);
-			list_2.setEnabled(false);
+			portJList.setEnabled(false);
 			// 매수.setEnabled(true);
 
 		} else if (e.getSource() == 신규) {
 			menu = "신규메뉴";
 			initCustomerButton(false);
-			list_1.setEnabled(false);
-			list_2.setEnabled(false);
+			customerJList.setEnabled(false);
+			portJList.setEnabled(false);
 			buttonColorChange(신규);
 
 		} else if (e.getSource() == 수정) {
 			menu = "수정메뉴";
 			initCustomerButton(false);
 			거래주.setEnabled(true);
-			list_2.setEnabled(true);
+			portJList.setEnabled(true);
 			매수.setEnabled(true);
 			매도.setEnabled(true);
 			등록번호필드.setEditable(false);
@@ -542,14 +558,14 @@ public class BrockerUI implements ActionListener {
 		} else if (e.getSource() == 매수) {// 산다
 			menu = "매수메뉴";
 			initCustomerButton(false);
-			// list_1.setEnabled(false);
-			// list_2.setEnabled(false);
+			// customerJList.setEnabled(false);
+			// portJList.setEnabled(false);
 			buttonColorChange(매수);
 		} else if (e.getSource() == 매도) {// 판다
 			menu = "매도메뉴";
 			initCustomerButton(false);
-			// list_1.setEnabled(false);
-			// list_2.setEnabled(false);
+			// customerJList.setEnabled(false);
+			// portJList.setEnabled(false);
 			buttonColorChange(매도);
 
 		} else if (e.getSource() == 확인) {
@@ -564,7 +580,7 @@ public class BrockerUI implements ActionListener {
 					db.addCustomer(cus);
 				} catch (DuplicateIDException e1) {
 					e1.printStackTrace();
-					
+
 				}
 				JOptionPane.showMessageDialog(null, "신규등록완료");
 			} else if (menu == "수정메뉴") {
@@ -577,6 +593,8 @@ public class BrockerUI implements ActionListener {
 			} else if (menu == "삭제메뉴") {
 				try {
 					db.deleteCustomer(등록번호필드.getText());
+//					Object selectedValue = (Customer) customerJList.getSelectedValue();
+//					dlm2.removeElement(selectedValue);//갑자기 잘됨 , 초기화메소드 고객리스트주석볼것
 				} catch (RecordNotFoundException e1) {
 					e1.printStackTrace();
 				}
@@ -595,22 +613,19 @@ public class BrockerUI implements ActionListener {
 				JOptionPane.showMessageDialog(null, "판매완료");
 			}
 
-			// TODO 갱신필요
-			// initialize();
-			initCustomerButton(true);//TODO 꼭 2번 해줘야하나? 
-			this.refreshCustomer();//TODO 갱신잘안됨
+			initCustomerButton(true);// TODO 꼭 2번 해줘야하나?
 
-			clearAll();//TODO 이걸 합칠 순 없을까?
-			
+			clearAll();// TODO 이걸 합칠 순 없을까?
+
 		} else if (e.getSource() == 취소) {
 			clearAll();
 			initCustomerButton(true);
-			list.setEnabled(true);
-			list_1.setEnabled(true);
-			list_2.setEnabled(true);
+			stockJList.setEnabled(true);
+			customerJList.setEnabled(true);
+			portJList.setEnabled(true);
 			// 매수.setEnabled(false);
 			// 매도.setEnabled(false);
 		}
-		this.refreshCustomer();
+//		this.refreshCustomer();
 	}
 }
