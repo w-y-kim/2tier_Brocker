@@ -171,7 +171,7 @@ public class Database {
 	 */
 	public void addCustomer(Customer c) throws DuplicateIDException {
 
-		if (!ssnExist(c.getSsn()))
+		if (ssnExist(c.getSsn()))//TODO 여기 왜 ! 빼야함. 말이 안된다
 			throw new DuplicateIDException(); // 존재하지 않는 경우 예외처리
 
 		Connection con = ConnectionManager.getConnection();
@@ -480,9 +480,8 @@ public class Database {
 			pstat.setString(1, s.getSsn());
 			pstat.setString(2, s.getSymbol());
 			ResultSet rs = pstat.executeQuery();
-
 			if (rs.next()) {// 기존 수량 존재 시
-				sql = "UPDATE SHARES SET quantitiy = quantity + ? where =? AND symbol=?";
+				sql = "UPDATE SHARES SET quantity = quantity+? where ssn=? AND symbol=?";
 				pstat = con.prepareStatement(sql);
 				pstat.setInt(1, s.getQuantity());
 				pstat.setString(2, s.getSsn());

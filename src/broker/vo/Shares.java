@@ -34,7 +34,7 @@ public class Shares implements Serializable {
 	}
 	@Override
 	public String toString() {
-		return "[주식명] " + symbol + "[보유주] " + quantity;
+		return symbol + "[보유주] " + quantity;
 	}
 
 	

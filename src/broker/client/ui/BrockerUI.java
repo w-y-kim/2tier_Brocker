@@ -9,6 +9,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.text.BadLocationException;
 
 import broker.dao.Database;
 import broker.exception.DuplicateIDException;
@@ -21,17 +22,32 @@ import broker.vo.Stock;
 import net.miginfocom.swing.MigLayout;
 
 import java.awt.Font;
+import java.awt.Image;
+
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.sound.midi.SysexMessage;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import java.awt.Window.Type;
 import javax.swing.JTextArea;
+import java.awt.FlowLayout;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JTree;
+import java.awt.BorderLayout;
+import javax.swing.JMenuItem;
+import javax.swing.JProgressBar;
 
 public class BrockerUI implements ActionListener {
 
@@ -75,7 +91,6 @@ public class BrockerUI implements ActionListener {
 	private DefaultListModel<Shares> dlm3;
 	private JList portJList;
 
-
 	private JTextArea 주소명필드;
 
 	private ArrayList<Stock> stockList;
@@ -89,6 +104,16 @@ public class BrockerUI implements ActionListener {
 	private Shares shares;
 
 	private JPanel customer_area;
+	private JButton 갱신;
+	private JMenuBar menuBar;
+	private JMenu mnNewMenu;
+	private JMenu mnNewMenu_1;
+	private JPanel panel;
+	private JMenuItem mntmNewMenuItem;
+	private JMenuItem mntmNewMenuItem_1;
+	private static JProgressBar 상태바;
+	private int strLength;
+	private JButton 종료;
 
 	/**
 	 * Launch the application.
@@ -104,6 +129,7 @@ public class BrockerUI implements ActionListener {
 				}
 			}
 		});
+
 	}
 
 	/**
@@ -121,7 +147,7 @@ public class BrockerUI implements ActionListener {
 		frame.setType(Type.UTILITY);
 		frame.setTitle("주식매매프로그램");
 		frame.getContentPane().setBackground(Color.WHITE);
-		frame.setBounds(100, 100, 743, 360);
+		frame.setBounds(100, 100, 743, 384);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 
@@ -200,7 +226,7 @@ public class BrockerUI implements ActionListener {
 
 		// 고객리스트
 		dlm2 = new DefaultListModel<Customer>();
-		try {//TODO 멤버변수였던걸 로컬로 바꾸니까 갑자기 dlm2가 갱신 잘됨 뭐지 ?? 
+		try {// TODO 멤버변수였던걸 로컬로 바꾸니까 갑자기 dlm2가 갱신 잘됨 뭐지 ??
 			ArrayList<Customer> cusList = db.getAllCustomer();
 			for (Customer e : cusList) {
 				dlm2.addElement(e);
@@ -218,15 +244,6 @@ public class BrockerUI implements ActionListener {
 
 		// 포트폴리오리스트
 		dlm3 = new DefaultListModel<Shares>();
-//		try {
-//			ArrayList<Shares> portList;
-//			portList = db.getAllPortfolio();
-//			for (Shares e : portList) {
-//				dlm3.addElement(e);
-//			}
-//		} catch (RecordNotFoundException e1) {
-//			e1.printStackTrace();
-//		}
 		portJList = new JList(dlm3);
 		portJList.setFont(new Font("나눔바른고딕", Font.PLAIN, 11));
 		scrollPane_2.setViewportView(portJList);
@@ -273,11 +290,11 @@ public class BrockerUI implements ActionListener {
 		거래수량필드.setBounds(329, 224, 85, 21);
 		customer_area.add(거래수량필드);
 
-		JLabel 수정수량 = new JLabel("수정수량");
-		수정수량.setFont(new Font("나눔고딕", Font.PLAIN, 11));
-		수정수량.setHorizontalAlignment(SwingConstants.LEFT);
-		수정수량.setBounds(276, 228, 48, 15);
-		customer_area.add(수정수량);
+		JLabel 거래수량 = new JLabel("거래수량");
+		거래수량.setFont(new Font("나눔고딕", Font.PLAIN, 11));
+		거래수량.setHorizontalAlignment(SwingConstants.LEFT);
+		거래수량.setBounds(276, 228, 48, 15);
+		customer_area.add(거래수량);
 
 		JLabel label_1 = new JLabel("전체고객명단");
 		label_1.setFont(new Font("나눔고딕 ExtraBold", Font.BOLD, 12));
@@ -290,32 +307,39 @@ public class BrockerUI implements ActionListener {
 		customer_area.add(label_2);
 
 		conrol_area = new JPanel();
-		conrol_area.setBounds(650, 10, 67, 283);
+		conrol_area.setBounds(650, 10, 67, 179);
 		body_panel.add(conrol_area);
-		conrol_area.setLayout(new MigLayout("", "[57px][57px][57px][57px]",
-				"[23px][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]"));
+		conrol_area.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
 		신규 = new JButton("신규");
 		신규.setFont(new Font("나눔고딕", Font.BOLD, 11));
-		conrol_area.add(신규, "cell 0 4,alignx left,aligny top");
+		conrol_area.add(신규);
 
 		수정 = new JButton("수정");
 		수정.setFont(new Font("나눔고딕", Font.BOLD, 11));
-		conrol_area.add(수정, "cell 0 7,alignx left,aligny top");
+		conrol_area.add(수정);
 
 		삭제 = new JButton("삭제");
 		삭제.setFont(new Font("나눔고딕", Font.BOLD, 11));
-		conrol_area.add(삭제, "cell 0 10");
+		conrol_area.add(삭제);
 
 		매수 = new JButton("매수");
+		매수.setToolTipText("산다ㅅㅅㅅㅅㅅ");
 		매수.setFont(new Font("나눔고딕", Font.BOLD, 11));
 		매수.setEnabled(true);
-		conrol_area.add(매수, "cell 0 23");
+		conrol_area.add(매수);
 
 		매도 = new JButton("매도");
+		매도.setToolTipText("판다ㅍㅍㅍㅍㅍ");
 		매도.setFont(new Font("나눔고딕", Font.BOLD, 11));
 		매도.setEnabled(true);
-		conrol_area.add(매도, "cell 0 29");
+		conrol_area.add(매도);
+		
+		종료 = new JButton("종료");
+		종료.setFont(new Font("나눔고딕", Font.BOLD, 11));
+		종료.setBackground(Color.BLACK);
+		종료.setForeground(Color.YELLOW);
+		conrol_area.add(종료);
 
 		확인 = new JButton("확인");
 		확인.setBounds(276, 255, 64, 23);
@@ -327,10 +351,24 @@ public class BrockerUI implements ActionListener {
 		취소.setFont(new Font("나눔고딕", Font.BOLD, 11));
 		customer_area.add(취소);
 
+		주소명필드 = new JTextArea();
+		주소명필드.setFont(new Font("나눔고딕", Font.PLAIN, 13));
+		주소명필드.setBounds(58, 222, 206, 51);
+		customer_area.add(주소명필드);
+
 		//////////////////////////////////////////////////////////////////////////////////////////////
 		{
+			//종료버튼이벤트추가
+			종료.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					System.exit(JFrame.EXIT_ON_CLOSE);
+				}
+				
+			});
+			
 			// 프레임항상 위
-			frame.setAlwaysOnTop(true);
+			// frame.setAlwaysOnTop(true);//이거하면 에러메시지 못봄
 			// 초기버튼설정
 			initCustomerButton(true);
 
@@ -340,13 +378,54 @@ public class BrockerUI implements ActionListener {
 			거래주필드.setEditable(false);
 			거래수량필드.setEditable(false);
 
-			주소명필드 = new JTextArea();
-			주소명필드.setFont(new Font("나눔고딕", Font.PLAIN, 13));
-			주소명필드.setBounds(58, 222, 206, 51);
-			customer_area.add(주소명필드);
+
+			갱신 = new JButton(new ImageIcon("update3.png"));
+			갱신.setToolTipText("갱신");
+			갱신.setFont(new Font("나눔고딕 ExtraBold", Font.PLAIN, 11));
+			갱신.setBounds(638, 199, 89, 71);
+			body_panel.add(갱신);
+			갱신.setBorderPainted(false);
+			갱신.setFocusPainted(true);
+
+			갱신.setContentAreaFilled(false);
+
+			상태바 = new JProgressBar();
+			상태바.setBounds(650, 272, 65, 14);
+			body_panel.add(상태바);
+			상태바.setMinimum(0); // 진행바 최소값 설정
+			상태바.setMaximum(30); // 진행바 최대값 설정
+			상태바.setStringPainted(true); // 진행사항 퍼센티지로 보여주기 설정
+			상태바.setForeground(Color.DARK_GRAY); // 진행바 색설정
+
+			상태바.setForeground(Color.BLACK);
+			상태바.setBorderPainted(true); // 경계선 표시 설정
+			상태바.setIndeterminate(true); // 진행이 안될때 모습 표시
+			상태바.setStringPainted(true);
+
+			menuBar = new JMenuBar();
+			menuBar.setBorderPainted(false);
+			menuBar.setForeground(Color.DARK_GRAY);
+			menuBar.setFont(new Font("나눔바른고딕", Font.PLAIN, 11));
+			frame.setJMenuBar(menuBar);
+
+			mnNewMenu_1 = new JMenu("파일");
+			menuBar.add(mnNewMenu_1);
+
+			panel = new JPanel();
+			mnNewMenu_1.add(panel);
+			panel.setLayout(new BorderLayout(0, 0));
+
+			mnNewMenu = new JMenu("접속");
+			menuBar.add(mnNewMenu);
+
+			mntmNewMenuItem = new JMenuItem("로그인");
+			mnNewMenu.add(mntmNewMenuItem);
+
+			mntmNewMenuItem_1 = new JMenuItem("로그아웃");
+			mnNewMenu.add(mntmNewMenuItem_1);
 
 			// 일괄처리_이벤트리스너&초기디자인
-			JButton[] allBtn = { 신규, 수정, 삭제, 확인, 취소, 매수, 매도, 거래주 };
+			JButton[] allBtn = { 신규, 수정, 삭제, 확인, 취소, 매수, 매도, 거래주, 갱신 };
 			for (int i = 0; i < allBtn.length; i++) {
 
 				// 버튼안에 포커스 없애기
@@ -357,10 +436,45 @@ public class BrockerUI implements ActionListener {
 				// 이벤트리스너
 				allBtn[i].addActionListener(this);
 			}
+			갱신.setFocusable(true);// 요것만 다시
 
 			stockJList.addMouseListener(new MouseHandler());
 			customerJList.addMouseListener(new MouseHandler());
-			portJList.addMouseListener(new MouseHandler());
+			portJList.addMouseListener(new MouseHandler() {
+
+			});
+
+			주소명필드.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+					super.keyPressed(e);
+					상태바.setIndeterminate(false); // 진행이 안될때 모습 표시
+					strLength = 주소명필드.getText().length();
+					상태바.setValue(strLength);
+					if (상태바.getValue() == 30) {
+						showMessage("주소값이 30자를 넘었습니다.");
+					}
+				}
+
+			});
+
+			거래수량필드.addKeyListener(new KeyAdapter() {
+				@Override
+				public void keyPressed(KeyEvent e) {
+					super.keyPressed(e);
+
+					if (거래주필드.getText().equals("") == true && 거래수량필드.getText().length() == 0) {
+						확인.setEnabled(false);
+						취소.setEnabled(false);
+					} else {
+						stockJList.setEnabled(true);
+						거래주.setEnabled(true);
+						확인.setEnabled(true);
+						취소.setEnabled(true);
+					}
+				}
+			});
+
 		}
 
 	}
@@ -388,6 +502,7 @@ public class BrockerUI implements ActionListener {
 	/**
 	 * 액션 이벤트에서 각 분기점 전후로 초기화 할 필요 시 사용
 	 */
+
 	public void clearAll() {
 		등록번호필드.setEditable(true);
 		주식명필드.setText("");
@@ -426,18 +541,18 @@ public class BrockerUI implements ActionListener {
 	 * 
 	 * @param stockJList
 	 */
-	private void setTextFieldValue(Object stockJList) {
-		if (stockJList instanceof Customer) {
-			Customer customer = (Customer) stockJList;
+	private void setTextFieldValue(Object list) {
+		if (list instanceof Customer) {
+			Customer customer = (Customer) list;
 			등록번호필드.setText(customer.getSsn());
 			성명필드.setText(customer.getCust_name());
 			주소명필드.setText(customer.getAddress());
-		} else if (stockJList instanceof Stock) {
-			Stock stock = (Stock) stockJList;
+		} else if (list instanceof Stock) {
+			Stock stock = (Stock) list;
 			주식명필드.setText(stock.getSymbol());
 			거래가필드.setText(Integer.toString(stock.getPrice()));
 		} else {
-			Shares shares = (Shares) stockJList;
+			Shares shares = (Shares) list;
 			거래주필드.setText(shares.getSymbol());
 			거래수량필드.setText(Integer.toString(shares.getQuantity()));
 		}
@@ -452,10 +567,14 @@ public class BrockerUI implements ActionListener {
 	 */
 	private class MouseHandler extends MouseAdapter {
 		public void mouseClicked(MouseEvent me) {
+			갱신.setFocusable(true);// 요것만 다시
+			if (주소명필드.getText().equals("")) {
+				상태바.setIndeterminate(true); // 진행이 안될때 모습 표시
+			}
 			if (me.getSource() == customerJList) {
+				// 리스트 갱신기능은 확인버튼에도 추가함
 				Object selectedValue = null;
 				selectedValue = (Customer) customerJList.getSelectedValue();
-				// clearAll(customerJList);//필요없는거 같음
 				setTextFieldValue((Customer) selectedValue);// 선택된 객체를 필드에 넣음
 
 				Customer cus = (Customer) selectedValue;// 선택한 객체의 주민번호 사용하려고
@@ -467,7 +586,7 @@ public class BrockerUI implements ActionListener {
 						dlm3.addElement(e);
 					}
 
-					//TODO 실행은 되는데 빠진게 반영이 안됨,dlm3는 반영되는데 
+					// TODO 실행은 되는데 빠진게 반영이 안됨,dlm3는 반영되는데
 					dlm2.removeAllElements();
 					ArrayList<Customer> cusList;
 					cusList = db.getAllCustomer();
@@ -494,24 +613,6 @@ public class BrockerUI implements ActionListener {
 		}
 	}
 
-//	public void refreshCustomer() {
-//		try {
-//			cusList = db.getAllCustomer();
-//		} catch (RecordNotFoundException e1) {
-//			e1.printStackTrace();
-//		}
-//		dlm2 = new DefaultListModel<Customer>();
-//		try {
-//			cusList = db.getAllCustomer();
-//			for (Customer e : cusList) {
-//				dlm2.addElement(e);
-//			}
-//		} catch (RecordNotFoundException e1) {
-//			e1.printStackTrace();
-//		}
-//
-//	}
-
 	public void buttonColorChange(JButton btn) {
 		btn.setBackground(Color.GRAY);
 		btn.setForeground(Color.WHITE);
@@ -519,16 +620,21 @@ public class BrockerUI implements ActionListener {
 
 	}
 
+	public void buttonColorBack(JButton btn) {
+		btn.setBackground(Color.WHITE);
+		btn.setForeground(Color.GRAY);
+		btn.setEnabled(true);
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// clearAll();
-//		this.refreshCustomer();
 		if (e.getSource() == 거래주) {// 확인>거래주명넘어감>매입열림
 
 			// 주식명필드.setText(t);
 			매수.setEnabled(true);
 			거래주필드.setText(주식명필드.getText());
 			거래수량필드.setEditable(true);
+			거래수량필드.setText("");
 			portJList.setEnabled(false);
 			// 매수.setEnabled(true);
 
@@ -536,6 +642,8 @@ public class BrockerUI implements ActionListener {
 			menu = "신규메뉴";
 			initCustomerButton(false);
 			customerJList.setEnabled(false);
+			stockJList.setEnabled(false);
+			거래주.setEnabled(false);
 			portJList.setEnabled(false);
 			buttonColorChange(신규);
 
@@ -544,88 +652,182 @@ public class BrockerUI implements ActionListener {
 			initCustomerButton(false);
 			거래주.setEnabled(true);
 			portJList.setEnabled(true);
-			매수.setEnabled(true);
-			매도.setEnabled(true);
+			// 매수.setEnabled(true);
+			// 매도.setEnabled(true);
 			등록번호필드.setEditable(false);
 			buttonColorChange(수정);
 
 		} else if (e.getSource() == 삭제) {
 			menu = "삭제메뉴";
 			initCustomerButton(false);
+			portJList.setEnabled(false);
+			stockJList.setEnabled(false);
 			거래주.setEnabled(false);
+			성명필드.setEditable(false);
+			주소명필드.setEditable(false);
 			buttonColorChange(삭제);
 
 		} else if (e.getSource() == 매수) {// 산다
 			menu = "매수메뉴";
 			initCustomerButton(false);
-			// customerJList.setEnabled(false);
-			// portJList.setEnabled(false);
+			stockJList.setEnabled(true);
+			거래수량필드.setEditable(true);// 팔아야하니까 열어줘야지
+			거래수량필드.setText("");// 내용도 비워주고
 			buttonColorChange(매수);
+
 		} else if (e.getSource() == 매도) {// 판다
 			menu = "매도메뉴";
 			initCustomerButton(false);
-			// customerJList.setEnabled(false);
-			// portJList.setEnabled(false);
+			거래수량필드.setEditable(true);// 매매메뉴니까 열어줘야지
+			거래주.setEnabled(false);
+			stockJList.setEnabled(false);
 			buttonColorChange(매도);
 
 		} else if (e.getSource() == 확인) {
-			initCustomerButton(true);
-			cus = new Customer(등록번호필드.getText(), 성명필드.getText(), 주소명필드.getText());
-			if (거래주필드.getText().equals(null)) {
-				shares = new Shares(등록번호필드.getText(), 거래주필드.getText(), Integer.parseInt(거래수량필드.getText()));
-			}
 
-			if (menu == "신규메뉴") {
-				try {
-					db.addCustomer(cus);
-					JOptionPane.showMessageDialog(null, "신규등록완료");
-				} catch (DuplicateIDException e1) {
-					e1.printStackTrace();
+			// initCustomerButton(true);//확인 , 취소버튼 닫음
+			cus = new Customer(등록번호필드.getText(), 성명필드.getText(), 주소명필드.getText());// 비어있어도
+																					// 생성함
 
-				}
-			} else if (menu == "수정메뉴") {
-				try {
+			try {
+
+				switch (menu) {
+				case "신규메뉴":
+
+					if (cus.getSsn().equals("") == true || cus.getCust_name().equals("") == true
+							|| cus.getAddress().equals("") == true) {
+						showMessage("회원정보를 선택해주세요");
+						return;
+					} else {
+						db.addCustomer(cus);
+						showMessage("고객등록완료");
+					}
+
+					// 되돌리기
+					customerJList.setEnabled(true);
+					portJList.setEnabled(true);
+					stockJList.setEnabled(true);
+					거래주.setEnabled(true);
+					break;
+				case "수정메뉴":
+
 					db.updateCustomer(cus);
-				} catch (RecordNotFoundException e1) {
-					e1.printStackTrace();
-				}
-				JOptionPane.showMessageDialog(null, "수정완료");
-			} else if (menu == "삭제메뉴") {
-				try {
+					showMessage("수정완료");
+
+					break;
+				case "삭제메뉴":
+					cus = new Customer(등록번호필드.getText(), 성명필드.getText(), 주소명필드.getText());// 사용자가
+																							// 직접
+																							// 입력하는
+																							// 경우
+																							// 위해
+																							// 다시받음
+					JOptionPane.showConfirmDialog(null, cus.getSsn() + "고객을 삭제하시겠습니까?", "고객삭제",
+							JOptionPane.YES_NO_OPTION);
 					db.deleteCustomer(등록번호필드.getText());
-//					Object selectedValue = (Customer) customerJList.getSelectedValue();
-//					dlm2.removeElement(selectedValue);//갑자기 잘됨 , 초기화메소드 고객리스트주석볼것
-				} catch (RecordNotFoundException e1) {
-					e1.printStackTrace();
-				}
-				JOptionPane.showMessageDialog(null, "삭제완료");
 
-			} else if (menu == "매수메뉴") {
-				db.buyShares(shares);
-				JOptionPane.showMessageDialog(null, "매입완료");
+					// 되돌리기
+					portJList.setEnabled(true);
+					stockJList.setEnabled(true);
+					거래주.setEnabled(true);
+					성명필드.setEditable(true);
+					주소명필드.setEditable(true);
 
-			} else if (menu == "매도메뉴") {
-				try {
-					db.sellShares(shares);
-				} catch (RecordNotFoundException | InvalidTransactionException e1) {
-					e1.printStackTrace();
+					break;
+				case "매수메뉴":
+
+					initCustomerButton(true);
+					shares = new Shares(등록번호필드.getText(), 거래주필드.getText(), Integer.parseInt(거래수량필드.getText()));
+					if (거래주필드.getText().equals("")) {
+						showMessage("거래주를 선택해주세요");
+					} else if (cus.getSsn().equals("") == true || cus.getCust_name().equals("") == true
+							|| cus.getAddress().equals("") == true || 거래주필드.getText().equals("") == true) {
+						showMessage("회원정보를 선택해주세요");
+					} else {
+						db.buyShares(shares);
+						showMessage("매입완료");
+						buttonColorBack(매수);
+						매수.setForeground(Color.BLACK);
+						return;
+					}
+					stockJList.setEnabled(true);// 귀찮다.. 이걸 메소드로 해보면 좋겠음
+
+					break;
+				case "매도메뉴":
+
+					initCustomerButton(true);
+					shares = new Shares(등록번호필드.getText(), 거래주필드.getText(), Integer.parseInt(거래수량필드.getText()));
+					if (거래주필드.getText().equals("") == true) {
+						showMessage("거래주를 선택해주세요");
+					} else if (cus.getSsn().equals("") == true || cus.getCust_name().equals("") == true
+							|| cus.getAddress().equals("") == true) {
+						showMessage("회원정보를 선택해주세요");
+					} else {
+						db.sellShares(shares);
+						showMessage("판매완료");
+						buttonColorBack(매도);
+						매도.setForeground(Color.BLACK);
+						return;
+					}
+
+					break;
+
+				default:
+					break;
 				}
-				JOptionPane.showMessageDialog(null, "판매완료");
+			} catch (DuplicateIDException | RecordNotFoundException | InvalidTransactionException e1) {
+				e1.printStackTrace();
+				showMessage(e1.getMessage());
 			}
 
-			initCustomerButton(true);// TODO 꼭 2번 해줘야하나?
-
-			clearAll();// TODO 이걸 합칠 순 없을까?
+			// TODO 꼭 2번 해줘야하나?, 일단 이거 지우면 연속제어시 문제생김
+			// TODO clearAll을 합칠 순 없을까?
+			 initCustomerButton(true);
+			clearAll();
 
 		} else if (e.getSource() == 취소) {
 			clearAll();
-			initCustomerButton(true);
+
 			stockJList.setEnabled(true);
 			customerJList.setEnabled(true);
 			portJList.setEnabled(true);
-			// 매수.setEnabled(false);
-			// 매도.setEnabled(false);
+			성명필드.setEditable(true);
+			주소명필드.setEditable(true);
+			switch (menu) {
+			case "신규메뉴":
+				buttonColorChange(신규);
+				break;
+			case "수정메뉴":
+				buttonColorChange(수정);
+				break;
+			case "삭제메뉴":
+				buttonColorChange(삭제);
+				break;
+			case "매수메뉴":
+				buttonColorChange(매수);
+				break;
+			case "매도메뉴":
+				buttonColorChange(매도);
+				stockJList.setEnabled(false);
+				break;
+
+			default:
+				break;
+			}
+		} else if (e.getSource() == 갱신) {
+
+			this.clearAll();
+			this.initCustomerButton(true);
+			stockJList.setEnabled(true);
+			customerJList.setEnabled(true);
+			portJList.setEnabled(true);
+			System.out.println("갱신");
+			showMessage("갱신되었습니다.");
+
 		}
-//		this.refreshCustomer();
+	}
+
+	public void showMessage(String msg) {
+		JOptionPane.showMessageDialog(null, msg);
 	}
 }
