@@ -137,6 +137,7 @@ public class BrockerUI implements ActionListener {
 	 */
 	public BrockerUI() {
 		initialize();
+		initialize();
 	}
 
 	/**
@@ -462,14 +463,16 @@ public class BrockerUI implements ActionListener {
 				@Override
 				public void keyPressed(KeyEvent e) {
 					super.keyPressed(e);
+					System.out.println("1");
+		
 
-					if (거래주필드.getText().equals("") == true && 거래수량필드.getText().length() == 0) {
-						확인.setEnabled(false);
-						취소.setEnabled(false);
-					} else {
-						stockJList.setEnabled(true);
-						거래주.setEnabled(true);
+					if (거래주필드.getText().isEmpty() == true && 거래수량필드.getText().length() > 0 ) {
+						System.out.println("길이: "+거래수량필드.getText().length());
+						System.out.println("2");
 						확인.setEnabled(true);
+					} else {
+						System.out.println("3");
+						stockJList.setEnabled(true);
 						취소.setEnabled(true);
 					}
 				}
@@ -477,7 +480,7 @@ public class BrockerUI implements ActionListener {
 
 		}
 
-	}
+	}//initialize 
 
 	/**
 	 * 액션 이벤트에서 각 분기점 전후로 초기화 할 필요 시 사용
@@ -674,7 +677,7 @@ public class BrockerUI implements ActionListener {
 			거래수량필드.setEditable(true);// 팔아야하니까 열어줘야지
 			거래수량필드.setText("");// 내용도 비워주고
 			buttonColorChange(매수);
-
+			확인.setEnabled(false);
 		} else if (e.getSource() == 매도) {// 판다
 			menu = "매도메뉴";
 			initCustomerButton(false);
@@ -682,7 +685,7 @@ public class BrockerUI implements ActionListener {
 			거래주.setEnabled(false);
 			stockJList.setEnabled(false);
 			buttonColorChange(매도);
-
+			확인.setEnabled(false);
 		} else if (e.getSource() == 확인) {
 
 			// initCustomerButton(true);//확인 , 취소버튼 닫음
