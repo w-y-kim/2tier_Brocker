@@ -1,4 +1,4 @@
-package broker.exception;
+package brocker.exception;
 
 /**사용자정의 예외 클래스
  * @author user

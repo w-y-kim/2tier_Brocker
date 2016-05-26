@@ -1,4 +1,4 @@
-package broker.exception;
+package brocker.exception;
 
 /**사용자정의예외
  * 동일한 아이디가 존재할 경우 발생시킬 예외처리클래스 

@@ -1,4 +1,4 @@
-package broker.client.ui;
+package brocker.client.ui;
 
 import java.awt.EventQueue;
 
@@ -11,14 +11,13 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.text.BadLocationException;
 
-import broker.dao.Database;
-import broker.exception.DuplicateIDException;
-import broker.exception.InvalidTransactionException;
-import broker.exception.RecordNotFoundException;
-import broker.vo.Customer;
-import broker.vo.Shares;
-import broker.vo.Stock;
-
+import brocker.dao.Database;
+import brocker.exception.DuplicateIDException;
+import brocker.exception.InvalidTransactionException;
+import brocker.exception.RecordNotFoundException;
+import brocker.vo.Customer;
+import brocker.vo.Shares;
+import brocker.vo.Stock;
 import net.miginfocom.swing.MigLayout;
 
 import java.awt.Font;
@@ -137,7 +136,7 @@ public class BrockerUI implements ActionListener {
 	 */
 	public BrockerUI() {
 		initialize();
-		initialize();
+		initialize();//새로 추가해도 새로 창 생기거나 갱신되지 않는 이유는?
 	}
 
 	/**
@@ -466,7 +465,7 @@ public class BrockerUI implements ActionListener {
 					System.out.println("1");
 		
 
-					if (거래주필드.getText().isEmpty() == true && 거래수량필드.getText().length() > 0 ) {
+					if (거래주필드.getText().isEmpty() == false && 거래수량필드.getText().length() == 0 ) {
 						System.out.println("길이: "+거래수량필드.getText().length());
 						System.out.println("2");
 						확인.setEnabled(true);

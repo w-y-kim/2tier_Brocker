@@ -1,4 +1,4 @@
-package broker.vo;
+package brocker.vo;
 
 public class Stock {
 	 private String symbol;

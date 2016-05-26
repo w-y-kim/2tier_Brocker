@@ -1,4 +1,4 @@
-package broker.dao;
+package brocker.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,8 +7,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import broker.vo.*;
-import broker.exception.*;
+import brocker.exception.*;
+import brocker.vo.*;
 
 public class Database {
 
@@ -580,7 +580,7 @@ public class Database {
 				int nowQuantity = Integer.parseInt(rs.getString("quantity"));
 				if (nowQuantity > s.getQuantity()) {	
 					// 기존 수량 존재 시
-					sql = "UPDATE SHARES SET quantitiy = quantity - ? where =? AND symbol = ?";
+					sql = "UPDATE SHARES SET quantity = quantity - ? where ssn=? AND symbol = ?";
 					pstat = con.prepareStatement(sql);
 					pstat.setInt(1, s.getQuantity());
 					pstat.setString(2, s.getSsn());

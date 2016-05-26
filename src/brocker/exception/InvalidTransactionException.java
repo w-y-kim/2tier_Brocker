@@ -1,4 +1,4 @@
-package broker.exception;
+package brocker.exception;
 
 public class InvalidTransactionException extends Exception {
 	

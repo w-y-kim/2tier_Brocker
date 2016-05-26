@@ -1,4 +1,4 @@
-package broker.vo;
+package brocker.vo;
 
 import java.io.Serializable;
 
