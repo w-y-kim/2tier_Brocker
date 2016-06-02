@@ -136,7 +136,7 @@ public class BrockerUI implements ActionListener {
 	 */
 	public BrockerUI() {
 		initialize();
-		initialize();//새로 추가해도 새로 창 생기거나 갱신되지 않는 이유는?
+		initialize();// 새로 추가해도 새로 창 생기거나 갱신되지 않는 이유는?
 	}
 
 	/**
@@ -334,7 +334,7 @@ public class BrockerUI implements ActionListener {
 		매도.setFont(new Font("나눔고딕", Font.BOLD, 11));
 		매도.setEnabled(true);
 		conrol_area.add(매도);
-		
+
 		종료 = new JButton("종료");
 		종료.setFont(new Font("나눔고딕", Font.BOLD, 11));
 		종료.setBackground(Color.BLACK);
@@ -358,15 +358,15 @@ public class BrockerUI implements ActionListener {
 
 		//////////////////////////////////////////////////////////////////////////////////////////////
 		{
-			//종료버튼이벤트추가
-			종료.addActionListener(new ActionListener(){
+			// 종료버튼이벤트추가
+			종료.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					System.exit(JFrame.EXIT_ON_CLOSE);
 				}
-				
+
 			});
-			
+
 			// 프레임항상 위
 			// frame.setAlwaysOnTop(true);//이거하면 에러메시지 못봄
 			// 초기버튼설정
@@ -377,7 +377,6 @@ public class BrockerUI implements ActionListener {
 			거래가필드.setEditable(false);
 			거래주필드.setEditable(false);
 			거래수량필드.setEditable(false);
-
 
 			갱신 = new JButton(new ImageIcon("update3.png"));
 			갱신.setToolTipText("갱신");
@@ -463,10 +462,9 @@ public class BrockerUI implements ActionListener {
 				public void keyPressed(KeyEvent e) {
 					super.keyPressed(e);
 					System.out.println("1");
-		
 
-					if (거래주필드.getText().isEmpty() == false && 거래수량필드.getText().length() == 0 ) {
-						System.out.println("길이: "+거래수량필드.getText().length());
+					if (거래주필드.getText().isEmpty() == false && 거래수량필드.getText().length() == 0) {
+						System.out.println("길이: " + 거래수량필드.getText().length());
 						System.out.println("2");
 						확인.setEnabled(true);
 					} else {
@@ -479,7 +477,7 @@ public class BrockerUI implements ActionListener {
 
 		}
 
-	}//initialize 
+	}// initialize
 
 	/**
 	 * 액션 이벤트에서 각 분기점 전후로 초기화 할 필요 시 사용
@@ -782,9 +780,7 @@ public class BrockerUI implements ActionListener {
 				showMessage(e1.getMessage());
 			}
 
-			// TODO 꼭 2번 해줘야하나?, 일단 이거 지우면 연속제어시 문제생김
-			// TODO clearAll을 합칠 순 없을까?
-			 initCustomerButton(true);
+			initCustomerButton(true);
 			clearAll();
 
 		} else if (e.getSource() == 취소) {
